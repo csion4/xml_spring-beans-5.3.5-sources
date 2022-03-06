@@ -84,11 +84,11 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					}
 				}
 			}
-			return BeanUtils.instantiateClass(constructorToUse);
+			return BeanUtils.instantiateClass(constructorToUse);	// 对于没有重写的类直接通过Constructor（jdk提供的）实例化bean
 		}
 		else {
 			// Must generate CGLIB subclass.
-			return instantiateWithMethodInjection(bd, beanName, owner);
+			return instantiateWithMethodInjection(bd, beanName, owner);	// 为什么对于有重写的bean需要使用CGLIB呢？？
 		}
 	}
 

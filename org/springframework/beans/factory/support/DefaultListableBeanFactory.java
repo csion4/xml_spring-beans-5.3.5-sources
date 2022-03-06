@@ -915,13 +915,13 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		// Iterate over a copy to allow for init methods which in turn register new bean definitions.
 		// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
-		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
+		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames); // 拷贝一个beanDefinitionNames副本
 
 		// Trigger initialization of all non-lazy singleton beans...
 		for (String beanName : beanNames) {
-			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
-			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
-				if (isFactoryBean(beanName)) {
+			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);  // 获取该beanName的beanDefinition对象，BeanDefinition可以理解为某个bean的描述，记录了这个bean对象的所有信息的定义
+			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {		// 判断该bean是非抽象的，单例的，非懒加载
+				if (isFactoryBean(beanName)) {		// 判断该bean是不是FactoryBean，这个涉及到FactoryBean来创建bean的流程，后面再说（待补充）
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
 					if (bean instanceof FactoryBean) {
 						FactoryBean<?> factory = (FactoryBean<?>) bean;
@@ -941,7 +941,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					}
 				}
 				else {
-					getBean(beanName);
+					getBean(beanName);		// 【主要】这里就是普通bean的实例流程，我们要知道spring的单例的bean的获取都是从缓存中获取的，如果缓存中没有则会实例，所以一般看到getBean(xxx)就表明这是要获取一个bean在spring容器中的实例了；设计思想是简单工厂+单例，BeanFactory就是那个简单工厂
 				}
 			}
 		}

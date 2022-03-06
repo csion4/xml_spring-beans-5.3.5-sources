@@ -75,13 +75,13 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 
 	/** Cache of singleton objects: bean name to bean instance. */
-	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
+	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);	// 第一级（最终）缓存，也是最终创建完成的bean存放的map
 
 	/** Cache of singleton factories: bean name to ObjectFactory. */
-	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
+	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);	// 第三级缓存，一个lambda表达式
 
 	/** Cache of early singleton objects: bean name to bean instance. */
-	private final Map<String, Object> earlySingletonObjects = new ConcurrentHashMap<>(16);
+	private final Map<String, Object> earlySingletonObjects = new ConcurrentHashMap<>(16);	// 第二级缓存
 
 	/** Set of registered singletons, containing the bean names in registration order. */
 	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
@@ -214,8 +214,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 		Assert.notNull(beanName, "Bean name must not be null");
 		synchronized (this.singletonObjects) {
-			Object singletonObject = this.singletonObjects.get(beanName);
-			if (singletonObject == null) {
+			Object singletonObject = this.singletonObjects.get(beanName);	// 尝试从第三级缓存中获取bean实例
+			if (singletonObject == null) {	// 对不起，没获取到
 				if (this.singletonsCurrentlyInDestruction) {
 					throw new BeanCreationNotAllowedException(beanName,
 							"Singleton bean creation not allowed while singletons of this factory are in destruction " +
@@ -224,14 +224,14 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				if (logger.isDebugEnabled()) {
 					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
 				}
-				beforeSingletonCreation(beanName);
+				beforeSingletonCreation(beanName);	// 校验当前bean是不是真正创建,如果是则是自身依赖而抛出异常，另外校验当前bean是否处在被排除创建bean的队列中，如果是也直接报错
 				boolean newSingleton = false;
 				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
 				if (recordSuppressedExceptions) {
 					this.suppressedExceptions = new LinkedHashSet<>();
 				}
 				try {
-					singletonObject = singletonFactory.getObject();
+					singletonObject = singletonFactory.getObject();		// 调用那个lambda中的方法了，也就是这个方法调用时的那个return createBean(beanName, mbd, args);
 					newSingleton = true;
 				}
 				catch (IllegalStateException ex) {

@@ -242,7 +242,7 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 
 
 	@Override
-	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
+	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {	// spring注解方式通过MergedBeanDefinitionPostProcessor后置处理器对有自动注入注解bean的解析，用于随后的populateBean方法属性填充
 		InjectionMetadata metadata = findAutowiringMetadata(beanName, beanType, null);
 		metadata.checkConfigMembers(beanDefinition);
 	}

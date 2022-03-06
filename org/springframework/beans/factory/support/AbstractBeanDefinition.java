@@ -461,13 +461,13 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * @throws ClassNotFoundException if the class name could be resolved
 	 */
 	@Nullable
-	public Class<?> resolveBeanClass(@Nullable ClassLoader classLoader) throws ClassNotFoundException {
+	public Class<?> resolveBeanClass(@Nullable ClassLoader classLoader) throws ClassNotFoundException {	// 当前是在某个bean definition中
 		String className = getBeanClassName();
 		if (className == null) {
 			return null;
 		}
-		Class<?> resolvedClass = ClassUtils.forName(className, classLoader);
-		this.beanClass = resolvedClass;
+		Class<?> resolvedClass = ClassUtils.forName(className, classLoader);	// 终于获取到这个bean的class对象了，底层主要还是通过Class.forClass反射获取的
+		this.beanClass = resolvedClass;		// 将这个当前bean的class设置到当前bean definition中
 		return resolvedClass;
 	}
 
